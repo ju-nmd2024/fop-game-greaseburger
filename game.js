@@ -54,6 +54,14 @@ function frog(x, y) {
   pop();
 }
 
+function ground() {
+  push();
+  noStroke();
+  fill("grey");
+  rect(0, 650, 600, 1000);
+  pop();
+}
+
 function menuText() {
   if (state === "playing") return;
   textSize(state === "start" ? 48 : 24);
@@ -78,6 +86,7 @@ function draw() {
   clear();
   background("white");
   menuText();
+  ground();
   if (state !== "start") frog(xPos, yPos);
 
   if (state === "start" && keyIsDown(W)) state = "playing";
