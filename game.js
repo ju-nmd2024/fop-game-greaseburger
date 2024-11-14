@@ -1,9 +1,13 @@
-let x = 300;
-let y = 100;
+let xPos = 300;
+let yPos = 100;
 let state = "start";
 let fallVelocity = 1;
 let thrustVelocity = 1.2;
 let acceleration = 0.5;
+
+//keycodes
+const W = 87;
+const ENTER = 13;
 
 function setup() {
   createCanvas(600, 800);
@@ -50,56 +54,49 @@ function frog(x, y) {
   pop();
 }
 
+function menuText() {
+  if (state === "playing") return;
+  textSize(state === "start" ? 48 : 24);
+  if (state === "start") text(`Press 'W' to thrust`, 100, 200);
+  else {
+    text(
+      `Landed ${
+        state === "win" ? "successfully" : "too hard, your legs are broken"
+      }`,
+      100,
+      200
+    );
+    text(
+      `Press 'Enter' to ${state === "win" ? "play again" : "restart"}`,
+      100,
+      250
+    );
+  }
+}
+
 function draw() {
   clear();
   background("white");
+  menuText();
+  if (state !== "start") frog(xPos, yPos);
 
-  switch (state) {
-    case "start":
-      textSize(48);
-      text(`Press 'W' to thrust`, 100, 200);
-      if (keyIsDown(87)) state = "playing";
-      break;
-    case "playing":
-      frog(x, y);
-      console.log(keyIsDown(87));
-      y += fallVelocity;
-      fallVelocity += acceleration;
+  if (state === "start" && keyIsDown(W)) state = "playing";
 
-      if (keyIsDown(87)) {
-        y -= thrustVelocity;
-        fallVelocity -= thrustVelocity;
-      }
+  if (state === "playing") {
+    yPos += fallVelocity;
+    fallVelocity += acceleration;
 
-      if (y > 560 && fallVelocity > 10) state = "fail";
-      if (y > 560 && fallVelocity <= 10) state = "win";
+    if (keyIsDown(W)) {
+      yPos -= thrustVelocity;
+      fallVelocity -= thrustVelocity;
+    }
+    if (yPos > 560) state = fallVelocity > 10 ? "fail" : "win";
+  }
 
-      break;
-    case "fail":
-      textSize(24);
-      text(`Landed too hard, your legs are broken`, 100, 200);
-      text(`Press 'Enter' to restart`, 100, 250);
-      frog(x, y);
-
-      if (keyIsDown(13)) {
-        y = 100;
-        fallVelocity = 1;
-        thrustVelocity = 1.2;
-        state = "playing";
-      }
-      break;
-    case "win":
-      textSize(24);
-      text(`Landed successfully`, 100, 200);
-      text(`Press 'Enter' to play again`, 100, 250);
-      frog(x, y);
-
-      if (keyIsDown(13)) {
-        y = 100;
-        fallVelocity = 1;
-        thrustVelocity = 1.2;
-        state = "playing";
-      }
-      break;
+  if (keyIsDown(ENTER) && (state === "fail" || state === "win")) {
+    yPos = 100;
+    fallVelocity = 1;
+    thrustVelocity = 1.2;
+    state = "start";
   }
 }
